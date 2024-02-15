@@ -1,3 +1,6 @@
+# gitignore
+.gitignore
+
 # vscode
 .vscode/
 
@@ -6,3 +9,6 @@
 
 # credentials
 api/middleware/credentials.json
+
+# firebase
+aichatapp-410621-firebase-adminsdk-dj7pk-3942f5bbda.json:Zone.Identifier
