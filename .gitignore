@@ -1,0 +1,8 @@
+# vscode
+.vscode/
+
+# env
+.env
+
+# credentials
+api/middleware/credentials.json
