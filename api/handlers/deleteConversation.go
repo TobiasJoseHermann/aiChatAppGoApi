@@ -1,46 +1,30 @@
 package handlers
 
 import (
-	"database/sql"
 	"net/http"
 
-	"github.com/TobiasJoseHermann/goApi/dbConnect"
-
+	"github.com/TobiasJoseHermann/goApi/api/models"
+	"github.com/TobiasJoseHermann/goApi/db"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func DeleteConversation(c *gin.Context) {
-	type requestBody struct {
-		ConversationID int `json:"id"`
-	}
+	conversationID := c.Param("ConversationID")
 
-	var reqBody requestBody
-	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	err := db.DB.Transaction(func(tx *gorm.DB) error {
+		// Delete messages
+		if err := tx.Where("conversation_id = ?", conversationID).Delete(&models.Message{}).Error; err != nil {
+			return err
+		}
 
-	tx, err := dbConnect.DB.Begin()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+		// Delete conversation
+		if err := tx.Where("id = ?", conversationID).Delete(&models.Conversation{}).Error; err != nil {
+			return err
+		}
 
-	_, err = tx.Exec("DELETE FROM UserMessage WHERE conversation_id = @conversation_id", sql.Named("conversation_id", reqBody.ConversationID))
-	if err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	_, err = tx.Exec("DELETE FROM Conversation WHERE conversation_id = @conversation_id", sql.Named("conversation_id", reqBody.ConversationID))
-	if err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = tx.Commit()
+		return nil
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

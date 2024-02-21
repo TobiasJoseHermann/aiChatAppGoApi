@@ -9,14 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetConversations(c *gin.Context) {
-	email := c.Param("Email")
+func GetMessages(c *gin.Context) {
+	conversationID := c.Param("ConversationID")
 
-	var conversations []models.Conversation
-	if err := db.DB.Where("email = ?", email).Find(&conversations).Error; err != nil {
+	var messages []models.Message
+	if err := db.DB.Where("conversation_id = ?", conversationID).Find(&messages).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, conversations)
+	c.JSON(http.StatusOK, messages)
 }

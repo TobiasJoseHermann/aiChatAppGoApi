@@ -1,7 +1,10 @@
 package models
 
+import "gorm.io/gorm"
+
 type Conversation struct {
-	ConversationID int `json:"conversation_id"`
-	Name string `json:"name"`
-	Email string `json:"email"`
+	gorm.Model
+	Name           string `json:"Name" gorm:"type:varchar(100)"`
+	Email          string `json:"Email" gorm:"type:varchar(100)"`
+	Messages    []Message `gorm:"foreignKey:ConversationID;references:ID"`
 }
