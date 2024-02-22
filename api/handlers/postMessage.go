@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/TobiasJoseHermann/goApi/api/models"
 	"github.com/TobiasJoseHermann/goApi/db"
@@ -33,7 +34,7 @@ func PostMessage(c *gin.Context) {
 		}
 
 		// Response
-		u, err := url.Parse("https://chat-flask-app-2sy27a6joa-uc.a.run.app/palm2")
+		u, err := url.Parse(os.Getenv("VERTEX_AI_URL"))
 		if err != nil {
 			return err
 		}
